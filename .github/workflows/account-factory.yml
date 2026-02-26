@@ -197,15 +197,20 @@ jobs:
         run: |
           cd environments/account-factory
           
-          # Extract outputs one by one to avoid debug message interference
-          ACCOUNT_ID=$(terraform output -raw account_id | grep -v "^::" | head -n1)
-          DEV_ACCOUNT=$(terraform output -raw dev_account_id | grep -v "^::" | head -n1)
-          STAGING_ACCOUNT=$(terraform output -raw staging_account_id | grep -v "^::" | head -n1)
-          PROD_ACCOUNT=$(terraform output -raw prod_account_id | grep -v "^::" | head -n1)
+          # Disable command echoing to avoid capturing command paths
+          set +x
+          
+          # Extract outputs directly
+          ACCOUNT_ID=$(terraform output -raw account_id 2>&1 | tail -n1)
+          DEV_ACCOUNT=$(terraform output -raw dev_account_id 2>&1 | tail -n1)
+          STAGING_ACCOUNT=$(terraform output -raw staging_account_id 2>&1 | tail -n1)
+          PROD_ACCOUNT=$(terraform output -raw prod_account_id 2>&1 | tail -n1)
           
           # Verify we got valid account IDs (12 digits)
           if [[ ! "$ACCOUNT_ID" =~ ^[0-9]{12}$ ]]; then
-            echo "Error: Invalid account_id format: $ACCOUNT_ID"
+            echo "Error: Invalid account_id format: '$ACCOUNT_ID'"
+            echo "Debug: Running terraform output to see what's available:"
+            terraform output
             exit 1
           fi
           
@@ -213,6 +218,10 @@ jobs:
           echo "dev_account=$DEV_ACCOUNT" >> $GITHUB_OUTPUT
           echo "staging_account=$STAGING_ACCOUNT" >> $GITHUB_OUTPUT
           echo "prod_account=$PROD_ACCOUNT" >> $GITHUB_OUTPUT
+          
+          echo "✅ Successfully extracted outputs:"
+          echo "  Account ID: $ACCOUNT_ID"
+          echo "  Dev Account: $DEV_ACCOUNT"
       
       - name: Comment provisioning result
         run: |
