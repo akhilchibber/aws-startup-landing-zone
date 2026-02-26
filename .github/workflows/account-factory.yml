@@ -196,13 +196,18 @@ jobs:
         id: outputs
         run: |
           cd environments/account-factory
-          # Use JSON output for reliable parsing
-          OUTPUTS=$(terraform output -json)
           
-          ACCOUNT_ID=$(echo "$OUTPUTS" | jq -r '.account_id.value')
-          DEV_ACCOUNT=$(echo "$OUTPUTS" | jq -r '.dev_account_id.value')
-          STAGING_ACCOUNT=$(echo "$OUTPUTS" | jq -r '.staging_account_id.value')
-          PROD_ACCOUNT=$(echo "$OUTPUTS" | jq -r '.prod_account_id.value')
+          # Extract outputs one by one to avoid debug message interference
+          ACCOUNT_ID=$(terraform output -raw account_id | grep -v "^::" | head -n1)
+          DEV_ACCOUNT=$(terraform output -raw dev_account_id | grep -v "^::" | head -n1)
+          STAGING_ACCOUNT=$(terraform output -raw staging_account_id | grep -v "^::" | head -n1)
+          PROD_ACCOUNT=$(terraform output -raw prod_account_id | grep -v "^::" | head -n1)
+          
+          # Verify we got valid account IDs (12 digits)
+          if [[ ! "$ACCOUNT_ID" =~ ^[0-9]{12}$ ]]; then
+            echo "Error: Invalid account_id format: $ACCOUNT_ID"
+            exit 1
+          fi
           
           echo "account_id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
           echo "dev_account=$DEV_ACCOUNT" >> $GITHUB_OUTPUT
