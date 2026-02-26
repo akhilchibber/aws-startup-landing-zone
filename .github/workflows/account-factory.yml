@@ -1,0 +1,250 @@
+name: AWS Account Factory - Automated Provisioning
+
+on:
+  issues:
+    types: [opened, edited]
+
+env:
+  TERRAFORM_VERSION: 1.0.0
+  AWS_REGION: eu-north-1
+
+jobs:
+  validate-intake-form:
+    name: Validate Account Request
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'account-factory')
+    
+    outputs:
+      is_valid: ${{ steps.validate.outputs.is_valid }}
+      team_name: ${{ steps.parse.outputs.team_name }}
+      team_lead: ${{ steps.parse.outputs.team_lead }}
+      team_email: ${{ steps.parse.outputs.team_email }}
+      cost_center: ${{ steps.parse.outputs.cost_center }}
+      data_classification: ${{ steps.parse.outputs.data_classification }}
+      business_criticality: ${{ steps.parse.outputs.business_criticality }}
+      primary_use_case: ${{ steps.parse.outputs.primary_use_case }}
+      monthly_budget: ${{ steps.parse.outputs.monthly_budget }}
+      additional_services: ${{ steps.parse.outputs.additional_services }}
+      compliance_requirements: ${{ steps.parse.outputs.compliance_requirements }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Parse intake form
+        id: parse
+        run: |
+          ISSUE_BODY="${{ github.event.issue.body }}"
+          
+          # Extract fields from issue body
+          TEAM_NAME=$(echo "$ISSUE_BODY" | grep -A 1 "## 1. Team Name" | tail -1 | xargs)
+          TEAM_LEAD=$(echo "$ISSUE_BODY" | grep -A 1 "## 2. Team Lead" | tail -1 | xargs)
+          TEAM_EMAIL=$(echo "$ISSUE_BODY" | grep -A 1 "## 3. Team Email" | tail -1 | xargs)
+          COST_CENTER=$(echo "$ISSUE_BODY" | grep -A 1 "## 4. Cost Center" | tail -1 | xargs)
+          DATA_CLASS=$(echo "$ISSUE_BODY" | grep -A 1 "## 5. Data Classification" | tail -1 | xargs)
+          CRITICALITY=$(echo "$ISSUE_BODY" | grep -A 1 "## 6. Business Criticality" | tail -1 | xargs)
+          USE_CASE=$(echo "$ISSUE_BODY" | grep -A 1 "## 7. Primary Use Case" | tail -1 | xargs)
+          BUDGET=$(echo "$ISSUE_BODY" | grep -A 1 "## 8. Estimated Monthly Budget" | tail -1 | xargs)
+          SERVICES=$(echo "$ISSUE_BODY" | grep -A 1 "## 9. Additional AWS Services" | tail -1 | xargs)
+          COMPLIANCE=$(echo "$ISSUE_BODY" | grep -A 1 "## 10. Compliance Requirements" | tail -1 | xargs)
+          
+          echo "team_name=$TEAM_NAME" >> $GITHUB_OUTPUT
+          echo "team_lead=$TEAM_LEAD" >> $GITHUB_OUTPUT
+          echo "team_email=$TEAM_EMAIL" >> $GITHUB_OUTPUT
+          echo "cost_center=$COST_CENTER" >> $GITHUB_OUTPUT
+          echo "data_classification=$DATA_CLASS" >> $GITHUB_OUTPUT
+          echo "business_criticality=$CRITICALITY" >> $GITHUB_OUTPUT
+          echo "primary_use_case=$USE_CASE" >> $GITHUB_OUTPUT
+          echo "monthly_budget=$BUDGET" >> $GITHUB_OUTPUT
+          echo "additional_services=$SERVICES" >> $GITHUB_OUTPUT
+          echo "compliance_requirements=$COMPLIANCE" >> $GITHUB_OUTPUT
+      
+      - name: Validate form fields
+        id: validate
+        run: |
+          TEAM_NAME="${{ steps.parse.outputs.team_name }}"
+          TEAM_EMAIL="${{ steps.parse.outputs.team_email }}"
+          COST_CENTER="${{ steps.parse.outputs.cost_center }}"
+          BUDGET="${{ steps.parse.outputs.monthly_budget }}"
+          
+          ERRORS=""
+          
+          # Validate team name
+          if [[ -z "$TEAM_NAME" ]]; then
+            ERRORS="$ERRORS\n- Team Name: Required field is empty"
+          elif ! [[ "$TEAM_NAME" =~ ^[a-z0-9_-]+$ ]]; then
+            ERRORS="$ERRORS\n- Team Name: Must be lowercase alphanumeric with hyphens/underscores"
+          fi
+          
+          # Validate team email
+          if [[ -z "$TEAM_EMAIL" ]]; then
+            ERRORS="$ERRORS\n- Team Email: Required field is empty"
+          elif ! [[ "$TEAM_EMAIL" =~ ^[a-zA-Z0-9._%+-]+@hospital\.com$ ]]; then
+            ERRORS="$ERRORS\n- Team Email: Must be valid hospital domain (@hospital.com)"
+          fi
+          
+          # Validate cost center
+          if [[ -z "$COST_CENTER" ]]; then
+            ERRORS="$ERRORS\n- Cost Center: Required field is empty"
+          elif ! [[ "$COST_CENTER" =~ ^CC-[A-Z]+-[0-9]+$ ]]; then
+            ERRORS="$ERRORS\n- Cost Center: Must follow format CC-DEPARTMENT-XXX"
+          fi
+          
+          # Validate budget
+          if [[ -z "$BUDGET" ]]; then
+            ERRORS="$ERRORS\n- Monthly Budget: Required field is empty"
+          elif ! [[ "$BUDGET" =~ ^[0-9]+$ ]]; then
+            ERRORS="$ERRORS\n- Monthly Budget: Must be a number"
+          elif [[ $BUDGET -lt 100 ]] || [[ $BUDGET -gt 100000 ]]; then
+            ERRORS="$ERRORS\n- Monthly Budget: Must be between $100-$100,000"
+          fi
+          
+          if [[ -z "$ERRORS" ]]; then
+            echo "is_valid=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_valid=false" >> $GITHUB_OUTPUT
+            echo "errors=$ERRORS" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Comment validation result
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const isValid = '${{ steps.validate.outputs.is_valid }}' === 'true';
+            const errors = '${{ steps.validate.outputs.errors }}';
+            
+            if (isValid) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '✅ **Validation Passed**\n\nYour account request has been validated successfully. Provisioning will begin shortly.\n\n**Status:** Processing'
+              });
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '❌ **Validation Failed**\n\nPlease correct the following errors:\n' + errors + '\n\nAfter making corrections, please edit this issue and resubmit.'
+              });
+            }
+
+  provision-account:
+    name: Provision AWS Account
+    runs-on: ubuntu-latest
+    needs: validate-intake-form
+    if: needs.validate-intake-form.outputs.is_valid == 'true'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Create Terraform variables file
+        run: |
+          cat > /tmp/account-factory.tfvars <<EOF
+          team_name = "${{ needs.validate-intake-form.outputs.team_name }}"
+          team_lead = "${{ needs.validate-intake-form.outputs.team_lead }}"
+          team_email = "${{ needs.validate-intake-form.outputs.team_email }}"
+          cost_center = "${{ needs.validate-intake-form.outputs.cost_center }}"
+          data_classification = "${{ needs.validate-intake-form.outputs.data_classification }}"
+          business_criticality = "${{ needs.validate-intake-form.outputs.business_criticality }}"
+          primary_use_case = "${{ needs.validate-intake-form.outputs.primary_use_case }}"
+          monthly_budget = ${{ needs.validate-intake-form.outputs.monthly_budget }}
+          additional_services = "${{ needs.validate-intake-form.outputs.additional_services }}"
+          compliance_requirements = "${{ needs.validate-intake-form.outputs.compliance_requirements }}"
+          EOF
+      
+      - name: Terraform Init
+        run: |
+          cd environments/account-factory
+          terraform init \
+            -backend-config="bucket=${{ secrets.TERRAFORM_STATE_BUCKET }}" \
+            -backend-config="key=account-factory/state" \
+            -backend-config="region=${{ env.AWS_REGION }}" \
+            -backend-config="dynamodb_table=${{ secrets.TERRAFORM_LOCK_TABLE }}"
+      
+      - name: Terraform Plan
+        run: |
+          cd environments/account-factory
+          terraform plan \
+            -var-file=/tmp/account-factory.tfvars \
+            -out=tfplan
+      
+      - name: Terraform Apply
+        run: |
+          cd environments/account-factory
+          terraform apply tfplan
+      
+      - name: Extract outputs
+        id: outputs
+        run: |
+          cd environments/account-factory
+          ACCOUNT_ID=$(terraform output -raw account_id)
+          DEV_ACCOUNT=$(terraform output -raw dev_account_id)
+          STAGING_ACCOUNT=$(terraform output -raw staging_account_id)
+          PROD_ACCOUNT=$(terraform output -raw prod_account_id)
+          
+          echo "account_id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
+          echo "dev_account=$DEV_ACCOUNT" >> $GITHUB_OUTPUT
+          echo "staging_account=$STAGING_ACCOUNT" >> $GITHUB_OUTPUT
+          echo "prod_account=$PROD_ACCOUNT" >> $GITHUB_OUTPUT
+      
+      - name: Comment provisioning result
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ **Account Provisioning Complete**\n\n**Account Details:**\n- Team: ${{ needs.validate-intake-form.outputs.team_name }}\n- Primary Account: ${{ steps.outputs.outputs.account_id }}\n- Dev Environment: ${{ steps.outputs.outputs.dev_account }}\n- Staging Environment: ${{ steps.outputs.outputs.staging_account }}\n- Prod Environment: ${{ steps.outputs.outputs.prod_account }}\n\n**Next Steps:**\n1. Check your email (${{ needs.validate-intake-form.outputs.team_email }}) for credentials\n2. Log in to AWS console\n3. Review landing zone infrastructure\n4. Start deploying applications\n\n**Support:** Contact cloud-team@hospital.com'
+            });
+      
+      - name: Send credentials email
+        run: |
+          # This would integrate with AWS SES or similar email service
+          # For now, this is a placeholder
+          echo "Credentials would be sent to ${{ needs.validate-intake-form.outputs.team_email }}"
+      
+      - name: Close issue
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed',
+              labels: ['account-factory', 'completed']
+            });
+
+  handle-validation-failure:
+    name: Handle Validation Failure
+    runs-on: ubuntu-latest
+    needs: validate-intake-form
+    if: needs.validate-intake-form.outputs.is_valid == 'false'
+    
+    steps:
+      - name: Add failed label
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['validation-failed']
+            });
