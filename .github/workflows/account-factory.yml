@@ -108,28 +108,22 @@ jobs:
       
       - name: Comment validation result
         if: always()
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const isValid = '${{ steps.validate.outputs.is_valid }}' === 'true';
-            const errors = '${{ steps.validate.outputs.errors }}';
-            
-            if (isValid) {
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: '✅ **Validation Passed**\n\nYour account request has been validated successfully. Provisioning will begin shortly.\n\n**Status:** Processing'
-              });
-            } else {
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: '❌ **Validation Failed**\n\nPlease correct the following errors:\n' + errors + '\n\nAfter making corrections, please edit this issue and resubmit.'
-              });
-            }
+        run: |
+          IS_VALID="${{ steps.validate.outputs.is_valid }}"
+          ERRORS="${{ steps.validate.outputs.errors }}"
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          
+          if [[ "$IS_VALID" == "true" ]]; then
+            BODY="✅ **Validation Passed**\n\nYour account request has been validated successfully. Provisioning will begin shortly.\n\n**Status:** Processing"
+          else
+            BODY="❌ **Validation Failed**\n\nPlease correct the following errors:\n$ERRORS\n\nAfter making corrections, please edit this issue and resubmit."
+          fi
+          
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER/comments \
+            -d "{\"body\":\"$BODY\"}"
 
   provision-account:
     name: Provision AWS Account
@@ -203,16 +197,22 @@ jobs:
           echo "prod_account=$PROD_ACCOUNT" >> $GITHUB_OUTPUT
       
       - name: Comment provisioning result
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '✅ **Account Provisioning Complete**\n\n**Account Details:**\n- Team: ${{ needs.validate-intake-form.outputs.team_name }}\n- Primary Account: ${{ steps.outputs.outputs.account_id }}\n- Dev Environment: ${{ steps.outputs.outputs.dev_account }}\n- Staging Environment: ${{ steps.outputs.outputs.staging_account }}\n- Prod Environment: ${{ steps.outputs.outputs.prod_account }}\n\n**Next Steps:**\n1. Check your email (${{ needs.validate-intake-form.outputs.team_email }}) for credentials\n2. Log in to AWS console\n3. Review landing zone infrastructure\n4. Start deploying applications\n\n**Support:** Contact cloud-team@hospital.com'
-            });
+        run: |
+          TEAM_NAME="${{ needs.validate-intake-form.outputs.team_name }}"
+          TEAM_EMAIL="${{ needs.validate-intake-form.outputs.team_email }}"
+          ACCOUNT_ID="${{ steps.outputs.outputs.account_id }}"
+          DEV_ACCOUNT="${{ steps.outputs.outputs.dev_account }}"
+          STAGING_ACCOUNT="${{ steps.outputs.outputs.staging_account }}"
+          PROD_ACCOUNT="${{ steps.outputs.outputs.prod_account }}"
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          
+          BODY="✅ **Account Provisioning Complete**\n\n**Account Details:**\n- Team: $TEAM_NAME\n- Primary Account: $ACCOUNT_ID\n- Dev Environment: $DEV_ACCOUNT\n- Staging Environment: $STAGING_ACCOUNT\n- Prod Environment: $PROD_ACCOUNT\n\n**Next Steps:**\n1. Check your email ($TEAM_EMAIL) for credentials\n2. Log in to AWS console\n3. Review landing zone infrastructure\n4. Start deploying applications\n\n**Support:** Contact cloud-team@hospital.com"
+          
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER/comments \
+            -d "{\"body\":\"$BODY\"}"
       
       - name: Send credentials email
         run: |
@@ -222,17 +222,14 @@ jobs:
       
       - name: Close issue
         if: success()
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.update({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'closed',
-              labels: ['account-factory', 'completed']
-            });
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER \
+            -d "{\"state\":\"closed\",\"labels\":[\"account-factory\",\"completed\"]}"
 
   handle-validation-failure:
     name: Handle Validation Failure
@@ -242,13 +239,11 @@ jobs:
     
     steps:
       - name: Add failed label
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.addLabels({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: ['validation-failed']
-            });
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER/labels \
+            -d "{\"labels\":[\"validation-failed\"]}"
