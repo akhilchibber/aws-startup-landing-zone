@@ -10,6 +10,7 @@ variable "aws_region" {
 variable "organization_unit_id" {
   description = "AWS Organization Unit ID where account will be created"
   type        = string
+  default     = ""  # Empty string means use root OU or skip if Organizations not enabled
 }
 
 # Team Information
