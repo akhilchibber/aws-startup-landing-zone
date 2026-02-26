@@ -110,6 +110,7 @@ jobs:
         if: always()
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const isValid = '${{ steps.validate.outputs.is_valid }}' === 'true';
             const errors = '${{ steps.validate.outputs.errors }}';
@@ -204,6 +205,7 @@ jobs:
       - name: Comment provisioning result
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -222,6 +224,7 @@ jobs:
         if: success()
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             github.rest.issues.update({
               issue_number: context.issue.number,
@@ -241,6 +244,7 @@ jobs:
       - name: Add failed label
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             github.rest.issues.addLabels({
               issue_number: context.issue.number,
