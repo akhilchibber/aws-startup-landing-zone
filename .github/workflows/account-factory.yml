@@ -196,10 +196,13 @@ jobs:
         id: outputs
         run: |
           cd environments/account-factory
-          ACCOUNT_ID=$(terraform output -raw account_id)
-          DEV_ACCOUNT=$(terraform output -raw dev_account_id)
-          STAGING_ACCOUNT=$(terraform output -raw staging_account_id)
-          PROD_ACCOUNT=$(terraform output -raw prod_account_id)
+          # Use JSON output for reliable parsing
+          OUTPUTS=$(terraform output -json)
+          
+          ACCOUNT_ID=$(echo "$OUTPUTS" | jq -r '.account_id.value')
+          DEV_ACCOUNT=$(echo "$OUTPUTS" | jq -r '.dev_account_id.value')
+          STAGING_ACCOUNT=$(echo "$OUTPUTS" | jq -r '.staging_account_id.value')
+          PROD_ACCOUNT=$(echo "$OUTPUTS" | jq -r '.prod_account_id.value')
           
           echo "account_id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
           echo "dev_account=$DEV_ACCOUNT" >> $GITHUB_OUTPUT
