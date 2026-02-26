@@ -87,6 +87,11 @@ resource "aws_budgets_budget" "team_budget" {
     notification_type   = "FORECASTED"
     threshold           = 80
     threshold_type      = "PERCENTAGE"
+    
+    subscriber {
+      subscription_type = "EMAIL"
+      address          = var.team_email
+    }
   }
 
   notification {
@@ -94,6 +99,11 @@ resource "aws_budgets_budget" "team_budget" {
     notification_type   = "ACTUAL"
     threshold           = 100
     threshold_type      = "PERCENTAGE"
+    
+    subscriber {
+      subscription_type = "EMAIL"
+      address          = var.team_email
+    }
   }
 }
 
