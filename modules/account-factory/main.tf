@@ -83,27 +83,19 @@ resource "aws_budgets_budget" "team_budget" {
   }
 
   notification {
-    comparison_operator = "GREATER_THAN"
-    notification_type   = "FORECASTED"
-    threshold           = 80
-    threshold_type      = "PERCENTAGE"
-    
-    subscriber {
-      subscription_type = "EMAIL"
-      address          = var.team_email
-    }
+    comparison_operator        = "GREATER_THAN"
+    notification_type          = "FORECASTED"
+    threshold                  = 80
+    threshold_type             = "PERCENTAGE"
+    subscriber_email_addresses = [var.team_email]
   }
 
   notification {
-    comparison_operator = "GREATER_THAN"
-    notification_type   = "ACTUAL"
-    threshold           = 100
-    threshold_type      = "PERCENTAGE"
-    
-    subscriber {
-      subscription_type = "EMAIL"
-      address          = var.team_email
-    }
+    comparison_operator        = "GREATER_THAN"
+    notification_type          = "ACTUAL"
+    threshold                  = 100
+    threshold_type             = "PERCENTAGE"
+    subscriber_email_addresses = [var.team_email]
   }
 }
 
