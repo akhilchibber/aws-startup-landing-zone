@@ -37,7 +37,8 @@ resource "time_sleep" "account_creation" {
   create_duration = "30s"
 }
 
-# Create IAM role for cross-account access
+# Create IAM role for cross-account access in the master account
+# This role allows the master account to manage the new account
 resource "aws_iam_role" "team_account_access" {
   name = "${var.team_name}-cross-account-access"
 
@@ -47,7 +48,7 @@ resource "aws_iam_role" "team_account_access" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::${aws_organizations_account.team_account.id}:root"
+          AWS = data.aws_caller_identity.current.account_id
         }
         Action = "sts:AssumeRole"
       }
@@ -56,6 +57,9 @@ resource "aws_iam_role" "team_account_access" {
 
   tags = var.common_tags
 }
+
+# Get current account ID (master account)
+data "aws_caller_identity" "current" {}
 
 # Attach admin policy for team account
 resource "aws_iam_role_policy_attachment" "team_account_admin" {
@@ -70,7 +74,7 @@ resource "aws_budgets_budget" "team_budget" {
   limit_unit        = "USD"
   limit_amount      = var.monthly_budget
   time_period_start = "2026-01-01_00:00"
-  time_period_end   = "2087-12-31_23:59"
+  time_period_end   = "2050-12-31_23:59"
   time_unit         = "MONTHLY"
 
   cost_filter {
