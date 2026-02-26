@@ -9,7 +9,7 @@ terraform {
   required_version = "~> 1.0"
 
   backend "s3" {
-    bucket         = "[YOUR_BUCKET_NAME]"
+    bucket         = "startup-landing-zone-terraform"
     key            = "network/dev"
     region         = "eu-north-1"
     encrypt        = true

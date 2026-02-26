@@ -1,6 +1,6 @@
 aws_region                    = "eu-north-1"
 aws_availability_zones        = ["eu-north-1a", "eu-north-1b"]
-aws_elastic_ip_allocation_ids = ["[YOUR_ELASTIC_IP_ALLOCATION_ID_1]", "[YOUR_ELASTIC_IP_ALLOCATION_ID_2]"]
+aws_elastic_ip_allocation_ids = ["eipalloc-06faaa96c6c589469", "eipalloc-06ad19500e7e33452"]
 vpc_cidr                      = "10.0.0.0/16"
 enable_vpc_flow_logs          = true
 environment                   = "d"
