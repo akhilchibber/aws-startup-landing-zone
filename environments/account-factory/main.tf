@@ -59,7 +59,7 @@ module "account_factory" {
   }
 }
 
-# Create dev environment in the current account (simplified for testing)
+# Create dev environment only (simplified for testing)
 module "dev_environment" {
   source = "../../modules/environment"
 
@@ -70,46 +70,6 @@ module "dev_environment" {
   common_tags = {
     Product     = "Hospital-Landing-Zone"
     Environment = "dev"
-    Component   = "Landing-Zone"
-    ManagedBy   = "Terraform"
-    CreatedBy   = "GitHub-Actions"
-    TeamName    = var.team_name
-  }
-
-  depends_on = [module.account_factory]
-}
-
-# Create staging environment in the current account (simplified for testing)
-module "staging_environment" {
-  source = "../../modules/environment"
-
-  team_name   = var.team_name
-  environment = "staging"
-  vpc_cidr    = var.staging_vpc_cidr
-
-  common_tags = {
-    Product     = "Hospital-Landing-Zone"
-    Environment = "staging"
-    Component   = "Landing-Zone"
-    ManagedBy   = "Terraform"
-    CreatedBy   = "GitHub-Actions"
-    TeamName    = var.team_name
-  }
-
-  depends_on = [module.account_factory]
-}
-
-# Create prod environment in the current account (simplified for testing)
-module "prod_environment" {
-  source = "../../modules/environment"
-
-  team_name   = var.team_name
-  environment = "prod"
-  vpc_cidr    = var.prod_vpc_cidr
-
-  common_tags = {
-    Product     = "Hospital-Landing-Zone"
-    Environment = "prod"
     Component   = "Landing-Zone"
     ManagedBy   = "Terraform"
     CreatedBy   = "GitHub-Actions"

@@ -132,15 +132,14 @@ resource "aws_subnet" "private" {
   )
 }
 
-# Elastic IPs for NAT Gateways
+# Elastic IP for NAT Gateway (single NAT for cost optimization)
 resource "aws_eip" "nat" {
-  count  = 2
   domain = "vpc"
 
   tags = merge(
     var.common_tags,
     {
-      Name        = "${var.team_name}-${var.environment}-eip-${count.index + 1}"
+      Name        = "${var.team_name}-${var.environment}-eip"
       Environment = var.environment
     }
   )
@@ -148,16 +147,15 @@ resource "aws_eip" "nat" {
   depends_on = [aws_internet_gateway.environment]
 }
 
-# NAT Gateways
+# NAT Gateway (single NAT for cost optimization)
 resource "aws_nat_gateway" "environment" {
-  count         = 2
-  allocation_id = aws_eip.nat[count.index].id
-  subnet_id     = aws_subnet.public[count.index].id
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public[0].id
 
   tags = merge(
     var.common_tags,
     {
-      Name        = "${var.team_name}-${var.environment}-nat-${count.index + 1}"
+      Name        = "${var.team_name}-${var.environment}-nat"
       Environment = var.environment
     }
   )
@@ -190,30 +188,29 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public.id
 }
 
-# Private Route Tables (one per AZ for NAT Gateway)
+# Private Route Table (shared across AZs, single NAT for cost optimization)
 resource "aws_route_table" "private" {
-  count  = 2
   vpc_id = aws_vpc.environment.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.environment[count.index].id
+    nat_gateway_id = aws_nat_gateway.environment.id
   }
 
   tags = merge(
     var.common_tags,
     {
-      Name        = "${var.team_name}-${var.environment}-private-rt-${count.index + 1}"
+      Name        = "${var.team_name}-${var.environment}-private-rt"
       Environment = var.environment
     }
   )
 }
 
-# Associate private subnets with private route tables
+# Associate private subnets with private route table
 resource "aws_route_table_association" "private" {
   count          = 2
   subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private[count.index].id
+  route_table_id = aws_route_table.private.id
 }
 
 # Data source for availability zones

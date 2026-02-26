@@ -1,4 +1,4 @@
-# AWS Startup Landing Zone - Quick Start Guide
+# AWS Hospital Landing Zone - Quick Start Guide
 
 **Get up and running in 5 minutes**
 
@@ -6,16 +6,16 @@
 
 ## What You're Getting
 
-A production-ready AWS network with:
-- 1 VPC (10.0.0.0/16)
-- 2 Public Subnets (DMZ layer)
-- 2 Private Subnets (Application layer)
-- 2 NAT Gateways (High availability)
-- 1 Internet Gateway
-- VPC Flow Logs (Monitoring)
+A production-ready AWS network for hospital teams with:
+- 1 VPC (10.0.0.0/16) - Hospital network
+- 2 Public Subnets (DMZ layer) - Load balancers, API gateways
+- 2 Private Subnets (Application layer) - EHR, telemedicine, lab systems
+- 2 NAT Gateways (High availability) - Secure outbound access
+- 1 Internet Gateway - Internet connectivity
+- VPC Flow Logs (Monitoring) - HIPAA audit trails
 
 **Cost:** ~$73-81/month  
-**Deployment Time:** 2 hours  
+**Deployment Time:** 2-3 hours  
 **Status:** ✅ Production Ready
 
 ---
@@ -26,18 +26,18 @@ A production-ready AWS network with:
 ```bash
 # 1. Create S3 bucket for Terraform state
 aws s3api create-bucket \
-  --bucket startup-landing-zone-terraform \
+  --bucket hospital-landing-zone-terraform \
   --region eu-north-1 \
   --create-bucket-configuration LocationConstraint=eu-north-1
 
 # 2. Enable versioning
 aws s3api put-bucket-versioning \
-  --bucket startup-landing-zone-terraform \
+  --bucket hospital-landing-zone-terraform \
   --versioning-configuration Status=Enabled
 
 # 3. Enable encryption
 aws s3api put-bucket-encryption \
-  --bucket startup-landing-zone-terraform \
+  --bucket hospital-landing-zone-terraform \
   --server-side-encryption-configuration '{
     "Rules": [{
       "ApplyServerSideEncryptionByDefault": {
@@ -85,7 +85,7 @@ Edit `environments/development/main.tf`:
 ```hcl
 terraform {
   backend "s3" {
-    bucket         = "startup-landing-zone-terraform"  # ← Your bucket name
+    bucket         = "hospital-landing-zone-terraform"  # ← Your bucket name
     key            = "network/dev"
     region         = "eu-north-1"
     encrypt        = true

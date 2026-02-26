@@ -1,6 +1,6 @@
-# AWS Startup Landing Zone - Documentation Index
+# AWS Hospital Landing Zone - Documentation Index
 
-**Single Source of Truth for All Documentation**
+**Single Source of Truth for All Hospital Teams**
 
 ---
 
@@ -9,14 +9,20 @@
 ### 🚀 I Want to Get Started Quickly
 → Read: **[QUICK_START.md](QUICK_START.md)** (5 minutes)
 
-### 👨‍💼 I'm a Business Decision Maker
+### 👨‍⚕️ I'm a Hospital Leader/Decision Maker
 → Read: **[BUSINESS_GUIDE.md](BUSINESS_GUIDE.md)** (15 minutes)
 
-### 👨‍💻 I'm a Technical Engineer
+### 👨‍💻 I'm a Clinical IT Engineer
 → Read: **[README.md](README.md)** (30 minutes)
 
 ### 📊 I Want to See the Architecture
 → View: **[generated-diagrams/](generated-diagrams/)** (Visual)
+
+### 🏭 I Want to Request a New AWS Account
+→ Read: **[ACCOUNT_FACTORY_TEAM_ONBOARDING.md](ACCOUNT_FACTORY_TEAM_ONBOARDING.md)** (20 minutes)
+
+### 🔧 I'm Setting Up the Account Factory
+→ Read: **[ACCOUNT_FACTORY_IMPLEMENTATION.md](ACCOUNT_FACTORY_IMPLEMENTATION.md)** (Reference)
 
 ---
 
@@ -24,51 +30,50 @@
 
 ### 1. README.md - Complete Technical Guide
 
-**For:** Technical engineers, DevOps, cloud architects  
+**For:** Clinical IT engineers, DevOps, cloud architects  
 **Time:** 30 minutes  
 **Contains:**
-- Complete architecture details
+- Complete architecture details for hospital systems
 - Network design and CIDR planning
 - Infrastructure components (VPC, subnets, NAT, IGW, etc.)
 - Step-by-step deployment guide
 - Verification procedures
 - Cost analysis
-- Best practices
+- Healthcare best practices
 - Troubleshooting guide
 
 **When to Read:**
 - You're deploying the infrastructure
 - You need to understand the technical details
-- You're customizing the setup
+- You're customizing the setup for your hospital
 - You're troubleshooting issues
 
 ---
 
 ### 2. BUSINESS_GUIDE.md - Non-Technical Guide
 
-**For:** Business leaders, decision makers, non-technical stakeholders  
-**Time:** 15 minutes  
+**For:** Hospital leaders, decision makers, non-technical stakeholders  
 **Contains:**
 - Simple explanation of what this is
-- Why you need it
-- Key benefits (security, cost, scalability, etc.)
-- Use cases
+- Why hospitals need it
+- Key benefits (security, compliance, cost, scalability, etc.)
+- Hospital-specific use cases (EHR, telemedicine, lab systems, etc.)
 - Cost and ROI analysis
-- Security and compliance features
+- HIPAA and healthcare compliance features
 - Implementation timeline
 - FAQ
 
 **When to Read:**
-- You're deciding whether to use this
-- You need to justify the cost to stakeholders
+- You're deciding whether to use this for your hospital
+- You need to justify the cost to hospital leadership
 - You want to understand the business benefits
-- You're presenting to executives
+- You're presenting to hospital executives or board members
 
 ---
 
 ### 3. QUICK_START.md - Quick Reference
 
-**For:** Anyone who wants to get started quickly  
+**For:** Clinical IT teams who want to get started quickly  
 **Time:** 5 minutes  
 **Contains:**
 - Prerequisites
@@ -94,26 +99,150 @@
 **Location:** `generated-diagrams/diagram_*.png`
 
 **Shows:**
-- VPC structure
-- Subnet layout
+- Hospital VPC structure
+- Subnet layout (DMZ + clinical apps)
 - Traffic flow
 - Component relationships
 
 **When to View:**
 - You want to understand the architecture visually
-- You're presenting to others
-- You need to explain the setup
+- You're presenting to hospital teams
+- You need to explain the setup to clinical staff
+
+---
+
+## Account Factory Documentation
+
+### 5. ACCOUNT_FACTORY_IMPLEMENTATION.md - Implementation Plan
+
+**For:** Cloud architects, DevOps engineers managing the account factory  
+**Contains:**
+- Complete implementation plan with 6 phases
+- Progress tracking
+- 10 essential intake questions
+- Terraform module structure
+- GitHub Actions workflow
+- Success criteria
+- Risk mitigation
+- Timeline
+
+**When to Read:**
+- You're implementing the account factory
+- You need to understand the provisioning process
+- You're tracking implementation progress
+- You're troubleshooting account creation
+
+---
+
+### 6. ACCOUNT_FACTORY_INTAKE_FORM.md - Intake Form Documentation
+
+**For:** Hospital teams requesting new accounts  
+**Contains:**
+- Detailed explanation of all 10 intake questions
+- Validation rules for each field
+- Examples for each question
+- FAQ about the intake process
+- Error handling guide
+
+**When to Read:**
+- You're filling out the account request form
+- You need to understand what each question means
+- You're getting validation errors
+- You want to know what information is required
+
+---
+
+### 7. ACCOUNT_FACTORY_TESTING_GUIDE.md - Testing & Deployment
+
+**For:** Cloud team testing the account factory before launch  
+**Contains:**
+- Prerequisites and setup
+- GitHub secrets configuration
+- Step-by-step testing procedures
+- Verification commands
+- Troubleshooting guide
+- Success criteria checklist
+
+**When to Read:**
+- You're testing the account factory
+- You need to verify account creation works
+- You're troubleshooting provisioning issues
+- You're preparing to launch to teams
+
+---
+
+### 8. ACCOUNT_FACTORY_TEAM_ONBOARDING.md - Team Onboarding Guide
+
+**For:** Hospital teams who have received their AWS account  
+**Contains:**
+- How to request an account
+- How to access your account
+- Account structure (dev/staging/prod)
+- How to deploy applications
+- Cost management
+- Security best practices
+- Troubleshooting
+- Getting help
+
+**When to Read:**
+- You've received your AWS account
+- You want to deploy your first application
+- You need to understand your account structure
+- You have questions about using AWS
 
 ---
 
 ## Reading Paths by Role
+- You want to know what information is required
 
-### 👨‍💼 Project Manager / Business Leader
+---
 
-**Goal:** Understand what this is and why it matters
+### 7. ACCOUNT_FACTORY_TESTING_GUIDE.md - Testing & Deployment
+
+**For:** Cloud team testing the account factory before launch  
+**Contains:**
+- Prerequisites and setup
+- GitHub secrets configuration
+- Step-by-step testing procedures
+- Verification commands
+- Troubleshooting guide
+- Success criteria checklist
+
+**When to Read:**
+- You're testing the account factory
+- You need to verify account creation works
+- You're troubleshooting provisioning issues
+- You're preparing to launch to teams
+
+---
+
+### 8. ACCOUNT_FACTORY_TEAM_ONBOARDING.md - Team Onboarding Guide
+
+**For:** Hospital teams who have received their AWS account  
+**Contains:**
+- How to request an account
+- How to access your account
+- Account structure (dev/staging/prod)
+- How to deploy applications
+- Cost management
+- Security best practices
+- Troubleshooting
+- Getting help
+
+**When to Read:**
+- You've received your AWS account
+- You want to deploy your first application
+- You need to understand your account structure
+- You have questions about using AWS
+
+---
+
+### 👨‍⚕️ Hospital Leader / CIO / Decision Maker
+
+**Goal:** Understand what this is and why it matters for the hospital
 
 **Reading Path:**
-1. Start: [BUSINESS_GUIDE.md](BUSINESS_GUIDE.md) - Understand benefits and costs
+1. Start: [BUSINESS_GUIDE.md](BUSINESS_GUIDE.md) - Understand benefits, costs, and ROI
 2. Optional: [Architecture Diagram](generated-diagrams/) - See visual overview
 3. Reference: [QUICK_START.md](QUICK_START.md) - Timeline and milestones
 
@@ -121,9 +250,9 @@
 
 ---
 
-### 👨‍💻 DevOps / Infrastructure Engineer
+### 👨‍💻 Clinical IT Engineer / DevOps
 
-**Goal:** Deploy and manage the infrastructure
+**Goal:** Deploy and manage the infrastructure for hospital teams
 
 **Reading Path:**
 1. Start: [QUICK_START.md](QUICK_START.md) - Get oriented
@@ -135,12 +264,12 @@
 
 ---
 
-### 🔐 Security / Compliance Officer
+### 🔐 Healthcare Compliance / Security Officer
 
-**Goal:** Verify security and compliance
+**Goal:** Verify security and HIPAA compliance
 
 **Reading Path:**
-1. Start: [BUSINESS_GUIDE.md](BUSINESS_GUIDE.md#security--compliance) - Compliance features
+1. Start: [BUSINESS_GUIDE.md](BUSINESS_GUIDE.md#security--compliance) - HIPAA and compliance features
 2. Main: [README.md](README.md#best-practices) - Security best practices
 3. Reference: [README.md](README.md#infrastructure-components) - Component details
 
@@ -315,6 +444,10 @@ aws-startup-landing-zone/
 | **README.md** | Technical | 30 min | Complete technical guide |
 | **BUSINESS_GUIDE.md** | Business | 15 min | Non-technical overview |
 | **QUICK_START.md** | Everyone | 5 min | Quick reference |
+| **ACCOUNT_FACTORY_IMPLEMENTATION.md** | Cloud Team | 20 min | Implementation plan |
+| **ACCOUNT_FACTORY_INTAKE_FORM.md** | Teams | 10 min | Intake form details |
+| **ACCOUNT_FACTORY_TESTING_GUIDE.md** | Cloud Team | 30 min | Testing procedures |
+| **ACCOUNT_FACTORY_TEAM_ONBOARDING.md** | Teams | 20 min | Team onboarding |
 | **INDEX.md** | Everyone | 5 min | Navigation guide |
 
 ---
