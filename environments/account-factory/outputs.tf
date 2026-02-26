@@ -1,0 +1,91 @@
+# Account Factory Outputs
+# These are used by GitHub Actions to provide feedback to the team
+
+output "account_id" {
+  description = "AWS Account ID created for the team"
+  value       = module.account_factory.account_id
+}
+
+output "account_arn" {
+  description = "ARN of the created account"
+  value       = module.account_factory.account_arn
+}
+
+output "team_name" {
+  description = "Team name"
+  value       = module.account_factory.team_name
+}
+
+output "team_email" {
+  description = "Team email"
+  value       = module.account_factory.team_email
+}
+
+output "cost_center" {
+  description = "Cost center code"
+  value       = module.account_factory.cost_center
+}
+
+# Dev Environment Outputs
+output "dev_vpc_id" {
+  description = "Dev environment VPC ID"
+  value       = module.dev_environment.vpc_id
+}
+
+output "dev_public_subnets" {
+  description = "Dev environment public subnet IDs"
+  value       = module.dev_environment.public_subnet_ids
+}
+
+output "dev_private_subnets" {
+  description = "Dev environment private subnet IDs"
+  value       = module.dev_environment.private_subnet_ids
+}
+
+# Staging Environment Outputs
+output "staging_vpc_id" {
+  description = "Staging environment VPC ID"
+  value       = module.staging_environment.vpc_id
+}
+
+output "staging_public_subnets" {
+  description = "Staging environment public subnet IDs"
+  value       = module.staging_environment.public_subnet_ids
+}
+
+output "staging_private_subnets" {
+  description = "Staging environment private subnet IDs"
+  value       = module.staging_environment.private_subnet_ids
+}
+
+# Prod Environment Outputs
+output "prod_vpc_id" {
+  description = "Prod environment VPC ID"
+  value       = module.prod_environment.vpc_id
+}
+
+output "prod_public_subnets" {
+  description = "Prod environment public subnet IDs"
+  value       = module.prod_environment.public_subnet_ids
+}
+
+output "prod_private_subnets" {
+  description = "Prod environment private subnet IDs"
+  value       = module.prod_environment.private_subnet_ids
+}
+
+# Summary Output
+output "provisioning_summary" {
+  description = "Summary of provisioned resources"
+  value = {
+    account_id              = module.account_factory.account_id
+    team_name               = module.account_factory.team_name
+    team_email              = module.account_factory.team_email
+    cost_center             = module.account_factory.cost_center
+    dev_vpc_id              = module.dev_environment.vpc_id
+    staging_vpc_id          = module.staging_environment.vpc_id
+    prod_vpc_id             = module.prod_environment.vpc_id
+    provisioning_status     = "Complete"
+    provisioning_timestamp  = timestamp()
+  }
+}

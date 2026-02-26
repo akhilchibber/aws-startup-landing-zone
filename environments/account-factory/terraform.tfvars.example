@@ -1,0 +1,27 @@
+# Account Factory Terraform Variables Example
+# This file shows the structure of variables needed for account provisioning
+# In production, these values are populated by GitHub Actions from the intake form
+
+aws_region           = "eu-north-1"
+organization_unit_id = "ou-xxxx-xxxxxxxx"  # Replace with your AWS Organization OU ID
+
+# Team Information (from intake form)
+team_name            = "radiology-team"
+team_lead            = "Dr. John Smith"
+team_email           = "radiology-team@hospital.com"
+cost_center          = "CC-RADIOLOGY-001"
+
+# Data & Compliance (from intake form)
+data_classification  = "Confidential"
+business_criticality = "High"
+primary_use_case     = "Medical Imaging"
+compliance_requirements = "HIPAA,HITECH"
+
+# Budget & Services (from intake form)
+monthly_budget       = 5000
+additional_services  = "RDS,S3,Lambda"
+
+# VPC CIDR Blocks (auto-assigned per team)
+dev_vpc_cidr         = "10.0.0.0/16"
+staging_vpc_cidr     = "10.1.0.0/16"
+prod_vpc_cidr        = "10.2.0.0/16"
