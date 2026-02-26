@@ -194,22 +194,28 @@ jobs:
       
       - name: Extract outputs
         id: outputs
+        shell: bash
         run: |
           cd environments/account-factory
           
-          # Suppress Terraform debug output
-          export TF_LOG=
-          export TF_LOG_PATH=
+          # Write outputs to files to avoid command echo interference
+          terraform output -raw account_id > /tmp/account_id.txt 2>&1
+          terraform output -raw dev_account_id > /tmp/dev_account_id.txt 2>&1
+          terraform output -raw staging_account_id > /tmp/staging_account_id.txt 2>&1
+          terraform output -raw prod_account_id > /tmp/prod_account_id.txt 2>&1
           
-          # Extract outputs directly
-          ACCOUNT_ID=$(terraform output -raw account_id)
-          DEV_ACCOUNT=$(terraform output -raw dev_account_id)
-          STAGING_ACCOUNT=$(terraform output -raw staging_account_id)
-          PROD_ACCOUNT=$(terraform output -raw prod_account_id)
+          # Read from files and extract only the account ID (12 digits)
+          ACCOUNT_ID=$(grep -oE '[0-9]{12}' /tmp/account_id.txt | head -n1)
+          DEV_ACCOUNT=$(grep -oE '[0-9]{12}' /tmp/dev_account_id.txt | head -n1)
+          STAGING_ACCOUNT=$(grep -oE '[0-9]{12}' /tmp/staging_account_id.txt | head -n1)
+          PROD_ACCOUNT=$(grep -oE '[0-9]{12}' /tmp/prod_account_id.txt | head -n1)
           
-          # Verify we got valid account IDs (12 digits)
+          # Verify we got valid account IDs
           if [[ ! "$ACCOUNT_ID" =~ ^[0-9]{12}$ ]]; then
             echo "Error: Invalid account_id format: '$ACCOUNT_ID'"
+            echo "Debug: Content of account_id file:"
+            cat /tmp/account_id.txt
+            echo ""
             echo "Debug: Running terraform output to see what's available:"
             terraform output
             exit 1
