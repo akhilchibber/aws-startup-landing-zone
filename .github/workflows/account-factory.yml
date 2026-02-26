@@ -168,6 +168,7 @@ jobs:
           monthly_budget = ${{ needs.validate-intake-form.outputs.monthly_budget }}
           additional_services = "${{ needs.validate-intake-form.outputs.additional_services }}"
           compliance_requirements = "${{ needs.validate-intake-form.outputs.compliance_requirements }}"
+          organization_unit_id = "r-ok31"
           EOF
       
       - name: Terraform Init
