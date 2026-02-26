@@ -59,13 +59,9 @@ module "account_factory" {
   }
 }
 
-# Create dev environment in the new account
+# Create dev environment in the current account (simplified for testing)
 module "dev_environment" {
   source = "../../modules/environment"
-  
-  providers = {
-    aws = aws.team_account_dev
-  }
 
   team_name   = var.team_name
   environment = "dev"
@@ -83,13 +79,9 @@ module "dev_environment" {
   depends_on = [module.account_factory]
 }
 
-# Create staging environment in the new account
+# Create staging environment in the current account (simplified for testing)
 module "staging_environment" {
   source = "../../modules/environment"
-  
-  providers = {
-    aws = aws.team_account_staging
-  }
 
   team_name   = var.team_name
   environment = "staging"
@@ -107,13 +99,9 @@ module "staging_environment" {
   depends_on = [module.account_factory]
 }
 
-# Create prod environment in the new account
+# Create prod environment in the current account (simplified for testing)
 module "prod_environment" {
   source = "../../modules/environment"
-  
-  providers = {
-    aws = aws.team_account_prod
-  }
 
   team_name   = var.team_name
   environment = "prod"
@@ -131,60 +119,3 @@ module "prod_environment" {
   depends_on = [module.account_factory]
 }
 
-# Configure AWS providers for each environment
-provider "aws" {
-  alias  = "team_account_dev"
-  region = var.aws_region
-
-  assume_role {
-    role_arn = module.account_factory.cross_account_role_arn
-  }
-
-  default_tags {
-    tags = {
-      Product     = "Hospital-Landing-Zone"
-      Environment = "dev"
-      Component   = "Landing-Zone"
-      ManagedBy   = "Terraform"
-      CreatedBy   = "GitHub-Actions"
-    }
-  }
-}
-
-provider "aws" {
-  alias  = "team_account_staging"
-  region = var.aws_region
-
-  assume_role {
-    role_arn = module.account_factory.cross_account_role_arn
-  }
-
-  default_tags {
-    tags = {
-      Product     = "Hospital-Landing-Zone"
-      Environment = "staging"
-      Component   = "Landing-Zone"
-      ManagedBy   = "Terraform"
-      CreatedBy   = "GitHub-Actions"
-    }
-  }
-}
-
-provider "aws" {
-  alias  = "team_account_prod"
-  region = var.aws_region
-
-  assume_role {
-    role_arn = module.account_factory.cross_account_role_arn
-  }
-
-  default_tags {
-    tags = {
-      Product     = "Hospital-Landing-Zone"
-      Environment = "prod"
-      Component   = "Landing-Zone"
-      ManagedBy   = "Terraform"
-      CreatedBy   = "GitHub-Actions"
-    }
-  }
-}
