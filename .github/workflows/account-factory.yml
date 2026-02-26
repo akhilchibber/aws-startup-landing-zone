@@ -197,14 +197,15 @@ jobs:
         run: |
           cd environments/account-factory
           
-          # Disable command echoing to avoid capturing command paths
-          set +x
+          # Suppress Terraform debug output
+          export TF_LOG=
+          export TF_LOG_PATH=
           
           # Extract outputs directly
-          ACCOUNT_ID=$(terraform output -raw account_id 2>&1 | tail -n1)
-          DEV_ACCOUNT=$(terraform output -raw dev_account_id 2>&1 | tail -n1)
-          STAGING_ACCOUNT=$(terraform output -raw staging_account_id 2>&1 | tail -n1)
-          PROD_ACCOUNT=$(terraform output -raw prod_account_id 2>&1 | tail -n1)
+          ACCOUNT_ID=$(terraform output -raw account_id)
+          DEV_ACCOUNT=$(terraform output -raw dev_account_id)
+          STAGING_ACCOUNT=$(terraform output -raw staging_account_id)
+          PROD_ACCOUNT=$(terraform output -raw prod_account_id)
           
           # Verify we got valid account IDs (12 digits)
           if [[ ! "$ACCOUNT_ID" =~ ^[0-9]{12}$ ]]; then
