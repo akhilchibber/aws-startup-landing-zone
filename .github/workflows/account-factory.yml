@@ -119,11 +119,15 @@ jobs:
             BODY="❌ **Validation Failed**\n\nPlease correct the following errors:\n$ERRORS\n\nAfter making corrections, please edit this issue and resubmit."
           fi
           
+          # Create JSON payload using jq
+          PAYLOAD=$(jq -n --arg body "$BODY" '{body: $body}')
+          
           curl -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
+            -H "Content-Type: application/json" \
             https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER/comments \
-            -d "{\"body\":\"$BODY\"}"
+            -d "$PAYLOAD"
 
   provision-account:
     name: Provision AWS Account
@@ -208,11 +212,14 @@ jobs:
           
           BODY="✅ **Account Provisioning Complete**\n\n**Account Details:**\n- Team: $TEAM_NAME\n- Primary Account: $ACCOUNT_ID\n- Dev Environment: $DEV_ACCOUNT\n- Staging Environment: $STAGING_ACCOUNT\n- Prod Environment: $PROD_ACCOUNT\n\n**Next Steps:**\n1. Check your email ($TEAM_EMAIL) for credentials\n2. Log in to AWS console\n3. Review landing zone infrastructure\n4. Start deploying applications\n\n**Support:** Contact cloud-team@hospital.com"
           
+          PAYLOAD=$(jq -n --arg body "$BODY" '{body: $body}')
+          
           curl -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
+            -H "Content-Type: application/json" \
             https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER/comments \
-            -d "{\"body\":\"$BODY\"}"
+            -d "$PAYLOAD"
       
       - name: Send credentials email
         run: |
