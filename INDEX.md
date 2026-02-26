@@ -221,41 +221,25 @@ Before deploying, ensure you have:
 
 ## 🚀 Quick Start
 
-**Current Status:** GitHub & AWS Setup Complete
+**Current Status:** Terraform Plan Complete - Terraform Deployment Pending
 
-**Next Steps (Phase 3-8):**
+**Next Steps (Phase 6-8):**
 
-1. **Phase 3:** Update terraform.tfvars with Elastic IP IDs
-   ```bash
-   # Edit: environments/development/terraform.tfvars
-   aws_elastic_ip_allocation_ids = ["eipalloc-06faaa96c6c589469", "eipalloc-06ad19500e7e33452"]
-   ```
-
-2. **Phase 4:** Initialize Terraform
+1. **Phase 6:** Deploy infrastructure
    ```bash
    cd environments/development
-   terraform init
-   terraform validate
-   terraform fmt
+   terraform apply tfplan
    ```
 
-3. **Phase 5:** Plan deployment
-   ```bash
-   terraform plan
-   ```
-
-4. **Phase 6:** Deploy infrastructure
-   ```bash
-   terraform apply
-   ```
-
-5. **Phase 7:** Verify resources
+2. **Phase 7:** Verify resources
    ```bash
    terraform output
+   aws ec2 describe-vpcs --region eu-north-1
    ```
 
-6. **Phase 8:** Document and commit
+3. **Phase 8:** Document and commit
    ```bash
+   terraform output > deployment_outputs.txt
    git add .
    git commit -m "Terraform deployment complete"
    git push
@@ -265,14 +249,15 @@ Before deploying, ensure you have:
 - GitHub: https://github.com/akhilchibber/aws-startup-landing-zone
 - S3 Bucket: `startup-landing-zone-terraform`
 - Elastic IPs: `eipalloc-06faaa96c6c589469`, `eipalloc-06ad19500e7e33452`
+- DynamoDB Table: `terraform-locks`
 
-See [NEXT_STEPS.md](NEXT_STEPS.md) for detailed Phase 3-8 instructions.
+See [NEXT_STEPS.md](NEXT_STEPS.md) for detailed Phase 6-8 instructions.
 
 ---
 
 ## 📊 Project Status
 
-**Status:** ✅ **GITHUB & AWS SETUP COMPLETE - TERRAFORM DEPLOYMENT PENDING**
+**Status:** ✅ **TERRAFORM PLAN COMPLETE - TERRAFORM DEPLOYMENT PENDING**
 
 **Completed:**
 - ✅ Architecture designed
@@ -281,16 +266,16 @@ See [NEXT_STEPS.md](NEXT_STEPS.md) for detailed Phase 3-8 instructions.
 - ✅ GitHub repository created and code pushed
 - ✅ S3 bucket created: `startup-landing-zone-terraform`
 - ✅ Elastic IPs allocated: `eipalloc-06faaa96c6c589469`, `eipalloc-06ad19500e7e33452`
+- ✅ DynamoDB table created: `terraform-locks`
+- ✅ Terraform initialized, validated, formatted
+- ✅ Terraform plan executed (25 resources planned)
 
 **Pending:**
-- ⏳ Phase 3: Update terraform.tfvars with Elastic IP IDs
-- ⏳ Phase 4: Terraform init, validate, fmt
-- ⏳ Phase 5: Terraform plan
-- ⏳ Phase 6: Terraform apply
+- ⏳ Phase 6: Terraform apply tfplan
 - ⏳ Phase 7: Verification
 - ⏳ Phase 8: Documentation & Handoff
 
-**Estimated Time Remaining:** 1-2 hours
+**Estimated Time Remaining:** ~25 minutes
 
 ---
 
@@ -311,11 +296,11 @@ See [NEXT_STEPS.md](NEXT_STEPS.md) for detailed Phase 3-8 instructions.
 ## 🎯 Next Steps
 
 1. **Start Here:** Read [PROJECT_STATUS.md](PROJECT_STATUS.md) - Current status
-2. **Phase 3:** Follow [NEXT_STEPS.md](NEXT_STEPS.md) - Configuration
-3. **Deploy:** Continue with Phases 4-8 in [NEXT_STEPS.md](NEXT_STEPS.md)
-4. **Verify:** Use [DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)
+2. **Phase 6:** Follow [NEXT_STEPS.md](NEXT_STEPS.md) - Deploy infrastructure
+3. **Verify:** Continue with Phase 7 in [NEXT_STEPS.md](NEXT_STEPS.md)
+4. **Document:** Complete Phase 8 in [NEXT_STEPS.md](NEXT_STEPS.md)
 5. **Learn:** Review [LANDING_ZONE_EXPLAINER.md](LANDING_ZONE_EXPLAINER.md)
 
 ---
 
-**Ready to continue? Start with Phase 3 in [NEXT_STEPS.md](NEXT_STEPS.md)!**
+**Ready to deploy? Start with Phase 6 in [NEXT_STEPS.md](NEXT_STEPS.md)!**
