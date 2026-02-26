@@ -1,0 +1,37 @@
+internet_gateway_id = "igw-01a55c30c9fde14b2"
+nat_gateways = {
+  "eu-north-1a" = {
+    "id" = "nat-0305d5f4eb1a16ce4"
+    "public_ip" = "13.51.99.77"
+  }
+  "eu-north-1b" = {
+    "id" = "nat-08175d6ee16966cc1"
+    "public_ip" = "13.63.12.180"
+  }
+}
+private_subnets = {
+  "eu-north-1a" = {
+    "availability_zone" = "eu-north-1a"
+    "cidr_block" = "10.0.32.0/19"
+    "id" = "subnet-08f0a3f1ccb9c2a12"
+  }
+  "eu-north-1b" = {
+    "availability_zone" = "eu-north-1b"
+    "cidr_block" = "10.0.64.0/19"
+    "id" = "subnet-036bd6a7cdd325d1f"
+  }
+}
+public_subnets = {
+  "eu-north-1a" = {
+    "availability_zone" = "eu-north-1a"
+    "cidr_block" = "10.0.0.0/24"
+    "id" = "subnet-05e35cee7e7de19d7"
+  }
+  "eu-north-1b" = {
+    "availability_zone" = "eu-north-1b"
+    "cidr_block" = "10.0.1.0/24"
+    "id" = "subnet-0d9d470d83efbf855"
+  }
+}
+vpc_cidr = "10.0.0.0/16"
+vpc_id = "vpc-022a72811066aa870"

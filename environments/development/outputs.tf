@@ -17,8 +17,8 @@ output "public_subnets" {
   description = "Public Subnet IDs and details"
   value = {
     for az, subnet in module.public_subnet : az => {
-      id               = subnet.id
-      cidr_block       = subnet.cidr_block
+      id                = subnet.id
+      cidr_block        = subnet.cidr_block
       availability_zone = subnet.availability_zone
     }
   }
@@ -28,8 +28,8 @@ output "private_subnets" {
   description = "Private Subnet IDs and details"
   value = {
     for az, subnet in module.private_subnet : az => {
-      id               = subnet.id
-      cidr_block       = subnet.cidr_block
+      id                = subnet.id
+      cidr_block        = subnet.cidr_block
       availability_zone = subnet.availability_zone
     }
   }
