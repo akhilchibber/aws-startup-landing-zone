@@ -174,9 +174,10 @@ jobs:
       - name: Terraform Init
         run: |
           cd environments/account-factory
+          TEAM_NAME="${{ needs.validate-intake-form.outputs.team_name }}"
           terraform init \
             -backend-config="bucket=${{ secrets.TERRAFORM_STATE_BUCKET }}" \
-            -backend-config="key=account-factory/state" \
+            -backend-config="key=account-factory/${TEAM_NAME}/state" \
             -backend-config="region=${{ env.AWS_REGION }}" \
             -backend-config="dynamodb_table=${{ secrets.TERRAFORM_LOCK_TABLE }}"
       
