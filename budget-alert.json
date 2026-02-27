@@ -1,0 +1,27 @@
+{
+  "BudgetName": "Account-Factory-Monthly-Budget",
+  "BudgetLimit": {
+    "Amount": "150",
+    "Unit": "USD"
+  },
+  "TimeUnit": "MONTHLY",
+  "BudgetType": "COST",
+  "CostFilters": {},
+  "TimePeriod": {
+    "Start": "2026-02-01T00:00:00Z",
+    "End": "2087-06-15T00:00:00Z"
+  },
+  "CostTypes": {
+    "IncludeTax": true,
+    "IncludeSubscription": true,
+    "UseBlended": false,
+    "IncludeRefund": false,
+    "IncludeCredit": false,
+    "IncludeUpfront": true,
+    "IncludeRecurring": true,
+    "IncludeOtherSubscription": true,
+    "IncludeSupport": true,
+    "IncludeDiscount": true,
+    "UseAmortized": false
+  }
+}
