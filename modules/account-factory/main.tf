@@ -29,6 +29,17 @@ resource "aws_organizations_account" "team_account" {
       Budget      = var.monthly_budget
     }
   )
+  
+  # AWS Organizations accounts cannot be deleted programmatically
+  # Prevent Terraform from trying to destroy/recreate accounts
+  lifecycle {
+    ignore_changes = [
+      name,
+      email,
+      role_name,
+      iam_user_access_to_billing
+    ]
+  }
 }
 
 # Wait for account to be created
