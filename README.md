@@ -25,6 +25,14 @@ The AWS Hospital Landing Zone with Account Factory is a fully automated system t
 
 ### For Teams Requesting Accounts
 
+**Option 1: Conversational AI (Recommended)**
+1. **Chat with Bot:** Use the Bedrock conversational intake chatbot
+2. **Answer Questions:** Bot guides you through 10 questions naturally
+3. **Auto-Correction:** Bot fixes common formatting issues automatically
+4. **Wait 5 Minutes:** System automatically provisions your account
+5. **Receive Credentials:** Check email for account access
+
+**Option 2: GitHub Issue Form**
 1. **Submit Request:** Create GitHub issue with intake form
 2. **Wait 5 Minutes:** System automatically provisions your account
 3. **Receive Credentials:** Check email for account access
@@ -62,22 +70,30 @@ When you request an account, the system automatically creates:
 
 ## Account Request Process
 
-### Step 1: Prepare Information
+### Method 1: Conversational AI (Recommended)
 
-Gather the following information before submitting your request:
+Use the Bedrock conversational intake chatbot for a guided experience:
 
-1. Team Name
-2. Team Lead Name
-3. Team Email
-4. Cost Center
-5. Data Classification
-6. Business Criticality
-7. Primary Use Case
-8. Estimated Monthly Budget
-9. Additional AWS Services (optional)
-10. Compliance Requirements
+1. **Access the Chatbot:** Visit the API endpoint or AWS console
+2. **Start Conversation:** Bot welcomes you and asks first question
+3. **Answer Naturally:** Respond in natural language (e.g., "Radiology Team" or "radiology-team")
+4. **Auto-Correction:** Bot automatically fixes formatting issues and asks for confirmation
+5. **Validation:** Bot validates each answer and provides helpful feedback
+6. **Review Summary:** Bot shows complete summary before submission
+7. **Automatic Submission:** Bot creates GitHub Issue automatically
 
-### Step 2: Submit GitHub Issue
+**Benefits:**
+- ✅ Natural language interaction
+- ✅ Real-time validation and feedback
+- ✅ Auto-correction of common mistakes
+- ✅ Guided experience with examples
+- ✅ No need to remember exact formats
+
+See [bedrock-intake/README.md](bedrock-intake/README.md) for chatbot documentation.
+
+### Method 2: GitHub Issue Form
+
+Traditional form-based submission:
 
 1. Go to GitHub repository
 2. Click **Issues** → **New Issue**
@@ -397,6 +413,8 @@ For development/testing:
 
 - **Technical Architecture:** [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Business Guide:** [BUSINESS_GUIDE.md](BUSINESS_GUIDE.md)
+- **Conversational Intake:** [bedrock-intake/README.md](bedrock-intake/README.md)
+- **Deployment Guide:** [bedrock-intake/DEPLOYMENT.md](bedrock-intake/DEPLOYMENT.md)
 - **This Document:** README.md
 
 ---
