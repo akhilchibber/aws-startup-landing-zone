@@ -13,9 +13,42 @@ This application provides a chatbot interface for creating AWS account requests.
 
 **Zero changes to existing Account Factory infrastructure or GitHub Actions workflow.**
 
+## How It Integrates with Account Factory
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  NEW: Bedrock Conversational Intake (Separate)             │
+│  ┌──────────┐    ┌────────┐    ┌──────────┐               │
+│  │ User Chat│ -> │ Lambda │ -> │ DynamoDB │               │
+│  │   API    │    │Function│    │ Sessions │               │
+│  └──────────┘    └────┬───┘    └──────────┘               │
+│                       │                                     │
+│                       ▼                                     │
+│                  Creates GitHub Issue                       │
+└───────────────────────┬───────────────────────────────────┘
+                        │
+                        ▼
+┌─────────────────────────────────────────────────────────────┐
+│  EXISTING: Account Factory (Unchanged)                      │
+│  ┌──────────────┐    ┌─────────────┐    ┌──────────────┐  │
+│  │ GitHub Issue │ -> │ GitHub      │ -> │ Terraform    │  │
+│  │  (trigger)   │    │ Actions     │    │ Provisioning │  │
+│  └──────────────┘    └─────────────┘    └──────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Key Points:**
+- The chatbot is a completely separate application
+- It only creates GitHub Issues in the exact same format as the manual form
+- The existing Account Factory workflow is triggered normally
+- No changes to Terraform modules, GitHub Actions, or existing infrastructure
+- Both methods (manual form and chatbot) work independently
+
 ## Architecture
 
-The system consists of:
+### System Components
+
+The chatbot system consists of:
 
 - **Lambda Function**: Handles conversation logic, validation, and GitHub integration
 - **API Gateway**: REST API for conversation endpoints
@@ -23,6 +56,85 @@ The system consists of:
 - **Secrets Manager**: Secure GitHub token storage
 - **CloudWatch**: Logging, metrics, and alarms
 - **Bedrock Flow**: Conversational AI interface (optional enhancement)
+
+### Detailed Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    User Interface                            │
+│  (Web App, CLI, or direct API calls)                        │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   API Gateway                                │
+│  POST /conversation/start                                    │
+│  POST /conversation/message                                  │
+│  GET  /conversation/status                                   │
+│  POST /conversation/resume                                   │
+│  DELETE /conversation/end                                    │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Lambda Function (Python 3.11)                   │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  Conversation Orchestrator                          │   │
+│  │  - Question flow management                         │   │
+│  │  - Command handling (help, exit, restart)          │   │
+│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  Validation Engine                                  │   │
+│  │  - 10 question validators                           │   │
+│  │  - Real-time feedback                               │   │
+│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  Auto-Corrector                                     │   │
+│  │  - 9 correction methods                             │   │
+│  │  - User confirmation                                │   │
+│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  Session Manager                                    │   │
+│  │  - State persistence                                │   │
+│  │  - Timeout handling                                 │   │
+│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  GitHub Client                                      │   │
+│  │  - Issue creation                                   │   │
+│  │  - Retry logic                                      │   │
+│  └─────────────────────────────────────────────────────┘   │
+└────────┬──────────────┬──────────────┬────────────┬─────────┘
+         │              │              │            │
+         ▼              ▼              ▼            ▼
+┌──────────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐
+│  DynamoDB    │ │ Secrets  │ │CloudWatch│ │   GitHub     │
+│  Sessions    │ │ Manager  │ │ Logs &   │ │   Issues     │
+│  (30min TTL) │ │ (Token)  │ │ Metrics  │ │              │
+└──────────────┘ └──────────┘ └──────────┘ └──────┬───────┘
+                                                    │
+                                                    ▼
+                                          ┌──────────────────┐
+                                          │ Account Factory  │
+                                          │ GitHub Actions   │
+                                          │ (Unchanged)      │
+                                          └──────────────────┘
+```
+
+### Resource Isolation
+
+All chatbot resources use the `bedrock-intake` prefix and are completely isolated:
+
+| Resource Type | Resource Name | Shared with Account Factory? |
+|--------------|---------------|------------------------------|
+| Lambda Function | `bedrock-intake-handler` | ❌ No - New resource |
+| API Gateway | `bedrock-intake-api` | ❌ No - New resource |
+| DynamoDB Table | `bedrock-intake-sessions` | ❌ No - New resource |
+| IAM Role | `bedrock-intake-lambda-role` | ❌ No - New resource |
+| Secret | `bedrock-intake/github-token` | ❌ No - New resource |
+| CloudWatch Dashboard | `bedrock-intake-dashboard` | ❌ No - New resource |
+| GitHub Issues | Created in same repo | ✅ Yes - Same format |
+
+**The only shared component is GitHub Issues, which are created in the exact same format as manual submissions.**
 
 ## Prerequisites
 

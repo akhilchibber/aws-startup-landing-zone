@@ -2,6 +2,20 @@
 
 This guide walks through deploying the Bedrock Conversational Intake system to AWS.
 
+## Important: Zero Impact on Existing Infrastructure
+
+**This deployment will NOT affect your existing Account Factory or landing zone infrastructure.**
+
+The chatbot is a completely separate application that:
+- Uses its own AWS resources (Lambda, API Gateway, DynamoDB)
+- Only creates GitHub Issues (same format as manual form)
+- Triggers the existing Account Factory workflow (unchanged)
+- Can be removed completely without affecting Account Factory
+
+```
+Chatbot (New) → GitHub Issue → Account Factory (Unchanged)
+```
+
 ## Prerequisites
 
 1. **AWS Account** with administrator access
